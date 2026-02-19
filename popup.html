@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+	<head>
+		<style>
+			body {
+				width: 220px;
+				padding: 15px;
+				font-family: sans-serif;
+				background: #f4f4f4;
+			}
+			h3 {
+				margin-top: 0;
+				font-size: 14px;
+				color: #333;
+			}
+			.row {
+				display: flex;
+				gap: 8px;
+				margin-bottom: 10px;
+			}
+			input {
+				width: 60px;
+				padding: 5px;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+			}
+			button {
+				flex: 1;
+				background: #007bff;
+				color: white;
+				border: none;
+				padding: 5px;
+				border-radius: 4px;
+				cursor: pointer;
+			}
+			button:hover {
+				background: #0056b3;
+			}
+			.note {
+				font-size: 10px;
+				color: #666;
+			}
+		</style>
+	</head>
+	<body>
+		<h3>Reload Frequency</h3>
+		<div class="row">
+			<input type="number" id="timeInput" value="45" min="10" />
+			<button id="saveBtn">Save & Reload</button>
+		</div>
+		<p class="note">Enter seconds (minimum 10s)</p>
+
+		<script src="popup.js"></script>
+	</body>
+</html>
