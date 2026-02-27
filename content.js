@@ -72,15 +72,27 @@ function playAlert() {
 		const audioContext = new (
 			window.AudioContext || window.webkitAudioContext
 		)();
-		const oscillator = audioContext.createOscillator();
-		const gainNode = audioContext.createGain();
-		oscillator.connect(gainNode);
-		gainNode.connect(audioContext.destination);
-		oscillator.type = 'sine';
-		oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
-		gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-		oscillator.start();
-		oscillator.stop(audioContext.currentTime + 4);
+		const duration = 1.0;
+		const gap = 0.5;
+
+		for (let i = 0; i < 3; i++) {
+			const startTime = audioContext.currentTime + i * (duration + gap);
+			const oscillator = audioContext.createOscillator();
+			const gainNode = audioContext.createGain();
+
+			oscillator.connect(gainNode);
+			gainNode.connect(audioContext.destination);
+
+			oscillator.type = 'sine';
+			oscillator.frequency.setValueAtTime(880, startTime);
+
+			gainNode.gain.setValueAtTime(0, startTime);
+			gainNode.gain.linearRampToValueAtTime(0.1, startTime + 0.05);
+			gainNode.gain.linearRampToValueAtTime(0, startTime + duration);
+
+			oscillator.start(startTime);
+			oscillator.stop(startTime + duration);
+		}
 	} catch (e) {
 		console.error('Audio play failed:', e);
 	}
@@ -103,9 +115,19 @@ function checkForJobs() {
 
 	// Only trigger if count increased
 	if (currentVisibleCount > lastJobCount) {
-		console.log('New jobs detected! Triggering alert...');
-		showToast(`🚨 ${currentVisibleCount} JOB(S) AVAILABLE!`);
+		const msg = `${currentVisibleCount} JOB(S) AVAILABLE!`;
+
+		console.log(msg);
+
+		// visual alerts
+		showToast(`🚨 ${msg}`);
 		playAlert();
+
+		// Windows desktop notification
+		chrome.runtime.sendMessage({
+			type: 'TRIGGER_NOTIFICATION',
+			message: msg,
+		});
 
 		visibleJobs.forEach(row => {
 			row.classList.add('animate-flash');
